@@ -1,16 +1,7 @@
-# craneapp
+# crane app
 
-A new Flutter project.
+This is an app I'm working on where users can login and answer questions about different types of cranes to practice for tests, similar to DMV practice apps.
 
-## Getting Started
+The server is on a separate repository, https://github.com/benjaminJohnson2204/craneapp-server, and was created with MongoDB, Express, and Node.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+The client code was created with Flutter and Dart. So far, I've only coded an authentication system and some of the code to display categories and questions, but the project is still a work in progress.
