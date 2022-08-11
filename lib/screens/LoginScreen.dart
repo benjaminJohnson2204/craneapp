@@ -44,9 +44,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         decoration: const InputDecoration(hintText: "Username"),
                       ),
                       TextFormField(
-                        controller: passwordController,
-                        decoration: const InputDecoration(hintText: "Password"),
-                      ),
+                          controller: passwordController,
+                          decoration:
+                              const InputDecoration(hintText: "Password"),
+                          obscureText: true),
                       ElevatedButton(
                         onPressed: () {
                           if (formKey.currentState!.validate()) {
@@ -65,8 +66,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: () {
                               SchedulerBinding.instance
                                   .addPostFrameCallback((_) {
-                                Navigator.pushReplacementNamed(context,
-                                    RegisterScreen.routeName);
+                                Navigator.pushReplacementNamed(
+                                    context, RegisterScreen.routeName);
                               });
                             },
                             child: const Text("Register"),

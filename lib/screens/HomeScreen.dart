@@ -6,6 +6,7 @@ import 'package:craneapp/services/categories.dart';
 import 'package:craneapp/services/checkAuthenticated.dart';
 import 'package:craneapp/services/logout.dart';
 import 'package:craneapp/widgets/category_selector.dart';
+import 'package:craneapp/widgets/logout_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/src/foundation/key.dart';
@@ -21,7 +22,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late bool authenticated;
-  late List<Category> _categories = [Category(id: "1", name: "Test")];
+  late List<Category> _categories = [];
   final CheckAuthenticatedService authenticatedService =
       CheckAuthenticatedService();
   final LogoutService logoutService = LogoutService();
@@ -60,12 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 padding: const EdgeInsets.all(8),
                 color: GlobalVariables.backgroundColor,
-                child: ElevatedButton(
-                  onPressed: () {
-                    logoutService.logout(context: context);
-                  },
-                  child: const Text("Logout"),
-                ),
+                child: LogoutButtonWidget(),
               ),
               Expanded(
                 child: SizedBox(

@@ -45,14 +45,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         decoration: const InputDecoration(hintText: "Username"),
                       ),
                       TextFormField(
-                        controller: passwordController,
-                        decoration: const InputDecoration(hintText: "Password"),
-                      ),
+                          controller: passwordController,
+                          decoration:
+                              const InputDecoration(hintText: "Password"),
+                          obscureText: true),
                       TextFormField(
-                        controller: confirmController,
-                        decoration:
-                            const InputDecoration(hintText: "Confirm Password"),
-                      ),
+                          controller: confirmController,
+                          decoration: const InputDecoration(
+                              hintText: "Confirm Password"),
+                          obscureText: true),
                       ElevatedButton(
                         onPressed: () {
                           if (formKey.currentState!.validate()) {

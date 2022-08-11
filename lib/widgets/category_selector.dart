@@ -9,6 +9,6 @@ class CategorySelectorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(onPressed: this.onTap, child: Text(this.name));
+    return ElevatedButton(onPressed: onTap, child: Text(name));
   }
 }

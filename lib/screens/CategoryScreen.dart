@@ -8,11 +8,14 @@ import 'package:craneapp/services/logout.dart';
 import 'package:craneapp/services/questions.dart';
 import 'package:craneapp/widgets/category_selector.dart';
 import 'package:craneapp/widgets/home_button.dart';
+import 'package:craneapp/widgets/logout_button.dart';
 import 'package:craneapp/widgets/question_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+
+import '../models/questionPreview.dart';
 
 class CategoryScreen extends StatefulWidget {
   static const String routeName = "/category";
@@ -24,16 +27,9 @@ class CategoryScreen extends StatefulWidget {
 }
 
 class _CategoryScreenState extends State<CategoryScreen> {
-  late List<dynamic> _questions = [
-    Question(
-        id: "1",
-        text: "Test",
-        category: widget.category,
-        options: ["1", "2", "3", "4"])
-  ];
+  late List<dynamic> _questions = [];
   final CheckAuthenticatedService authenticatedService =
       CheckAuthenticatedService();
-  final LogoutService logoutService = LogoutService();
   final QuestionsService questionsService = QuestionsService();
 
   @override
@@ -60,15 +56,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
             children: [
               Text(widget.category.name),
               Container(
-                padding: const EdgeInsets.all(8),
-                color: GlobalVariables.backgroundColor,
-                child: ElevatedButton(
-                  onPressed: () {
-                    logoutService.logout(context: context);
-                  },
-                  child: const Text("Logout"),
-                ),
-              ),
+                  padding: const EdgeInsets.all(8),
+                  color: GlobalVariables.backgroundColor,
+                  child: LogoutButtonWidget()),
               const HomeButtonWidget(),
               Expanded(
                 child: SizedBox(
@@ -76,7 +66,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   child: ListView.builder(
                     itemCount: _questions.length,
                     itemBuilder: (context, index) {
-                      return QuestionSelectorWidget(index: index, onTap: () {});
+                      return QuestionSelectorWidget(
+                          index: index,
+                          text: _questions[index].text,
+                          id: _questions[index].id);
                     },
                   ),
                 ),
