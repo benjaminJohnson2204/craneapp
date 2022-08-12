@@ -18,8 +18,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late bool authenticated;
-  late Future<List<dynamic>> _categories;
   final CheckAuthenticatedService authenticatedService =
       CheckAuthenticatedService();
   final LogoutService logoutService = LogoutService();
@@ -53,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: GlobalVariables.backgroundColor,
                 child: LogoutButtonWidget(),
               ),
-              FutureBuilder<List<dynamic>>(
+              FutureBuilder<List<Category>>(
                   future: categoriesService.getAllCategories(context: context),
                   builder: ((context, snapshot) {
                     if (snapshot.hasData) {

@@ -1,19 +1,11 @@
 import 'package:craneapp/constants/global_variables.dart';
 import 'package:craneapp/models/category.dart';
-import 'package:craneapp/models/question.dart';
-import 'package:craneapp/screens/LoginScreen.dart';
-import 'package:craneapp/services/categories.dart';
 import 'package:craneapp/services/checkAuthenticated.dart';
-import 'package:craneapp/services/logout.dart';
 import 'package:craneapp/services/questions.dart';
-import 'package:craneapp/widgets/category_selector.dart';
 import 'package:craneapp/widgets/home_button.dart';
 import 'package:craneapp/widgets/logout_button.dart';
 import 'package:craneapp/widgets/question_selector.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 import '../models/questionPreview.dart';
 
@@ -47,7 +39,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   color: GlobalVariables.backgroundColor,
                   child: LogoutButtonWidget()),
               const HomeButtonWidget(),
-              FutureBuilder<List<dynamic>>(
+              FutureBuilder<List<QuestionPreview>>(
                 future: questionsService.getQuestionsUnderCategory(
                     context: context, id: widget.category.id),
                 builder: (context, snapshot) {

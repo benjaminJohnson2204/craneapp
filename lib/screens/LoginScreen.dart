@@ -2,8 +2,6 @@ import 'package:craneapp/constants/global_variables.dart';
 import 'package:craneapp/screens/RegisterScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 import '../services/login.dart';
 

@@ -1,13 +1,11 @@
-import 'package:craneapp/models/category.dart';
-
 class QuestionPreview {
   final String text;
   final String id;
   final String categoryId;
-  final List<dynamic> options;
+  final List<String> optionIds;
   QuestionPreview(
       {required this.text,
       required this.id,
       required this.categoryId,
-      required this.options});
+      required this.optionIds});
 }

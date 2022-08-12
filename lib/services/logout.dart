@@ -1,10 +1,6 @@
-import 'dart:convert';
-
 import 'package:craneapp/constants/global_variables.dart';
-import 'package:craneapp/screens/HomeScreen.dart';
 import 'package:craneapp/screens/LoginScreen.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 

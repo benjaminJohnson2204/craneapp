@@ -1,5 +1,3 @@
-import 'package:craneapp/models/category.dart';
-
 class Option {
   final String text;
   final bool isCorrect;
