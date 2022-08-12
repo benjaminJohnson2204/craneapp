@@ -8,9 +8,6 @@ import 'package:craneapp/services/logout.dart';
 import 'package:craneapp/widgets/category_selector.dart';
 import 'package:craneapp/widgets/logout_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = "/";
@@ -22,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late bool authenticated;
-  late List<Category> _categories = [];
+  late Future<List<dynamic>> _categories;
   final CheckAuthenticatedService authenticatedService =
       CheckAuthenticatedService();
   final LogoutService logoutService = LogoutService();
@@ -37,13 +34,6 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!authenticated) {
         Navigator.pushNamed(context, LoginScreen.routeName);
       }
-    });
-    categoriesService
-        .getAllCategories(context: context)
-        .then((List<Category> categories) {
-      setState(() {
-        _categories = categories;
-      });
     });
   }
 
@@ -63,26 +53,35 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: GlobalVariables.backgroundColor,
                 child: LogoutButtonWidget(),
               ),
-              Expanded(
-                child: SizedBox(
-                  height: 200,
-                  child: ListView.builder(
-                    itemCount: _categories.length,
-                    itemBuilder: (context, index) {
-                      return CategorySelectorWidget(
-                          name: _categories[index].name,
-                          onTap: () {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => CategoryScreen(
-                                      category: _categories[index]),
-                                ));
-                          });
-                    },
-                  ),
-                ),
-              ),
+              FutureBuilder<List<dynamic>>(
+                  future: categoriesService.getAllCategories(context: context),
+                  builder: ((context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Expanded(
+                        child: SizedBox(
+                          height: 200,
+                          child: ListView.builder(
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              return CategorySelectorWidget(
+                                  name: snapshot.data![index].name,
+                                  onTap: () {
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => CategoryScreen(
+                                              category: snapshot.data![index]),
+                                        ));
+                                  });
+                            },
+                          ),
+                        ),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text('${snapshot.error}');
+                    }
+                    return const Center(child: CircularProgressIndicator());
+                  }))
             ],
           ),
         ),

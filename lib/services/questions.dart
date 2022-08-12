@@ -36,7 +36,6 @@ class QuestionsService {
       {required BuildContext context, required String id}) async {
     try {
       http.Response res = await http.get(Uri.parse('$uri/question/$id'));
-      print(jsonDecode(res.body)["options"]);
       dynamic question = jsonDecode(res.body)["question"];
       return Question(
           text: question["questionText"],

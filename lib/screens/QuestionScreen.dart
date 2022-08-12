@@ -17,59 +17,53 @@ class QuestionScreen extends StatefulWidget {
 }
 
 class _QuestionScreenState extends State<QuestionScreen> {
-  Question? _question;
-  bool loading = true;
   final QuestionsService questionsService = QuestionsService();
 
   @override
-  void initState() {
-    super.initState();
-    questionsService
-        .getQuestionById(context: context, id: widget.questionId)
-        .then((question) {
-      setState(() {
-        _question = question;
-        loading = false;
-      });
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (loading) {
-      return const Text("loading...");
-    }
-    return Scaffold(
-      backgroundColor: GlobalVariables.backgroundColor,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(_question!.text),
-              Container(
-                  padding: const EdgeInsets.all(8),
-                  color: GlobalVariables.backgroundColor,
-                  child: LogoutButtonWidget()),
-              const HomeButtonWidget(),
-              Expanded(
-                child: SizedBox(
-                  height: 200,
-                  child: ListView.builder(
-                    itemCount: _question!.options.length,
-                    itemBuilder: (context, index) {
-                      return ElevatedButton(
-                          onPressed: () {},
-                          child: Text(_question!.options[index].text));
-                    },
-                  ),
+    return FutureBuilder<Question>(
+      future: questionsService.getQuestionById(
+          context: context, id: widget.questionId),
+      builder: ((context, snapshot) {
+        if (snapshot.hasData) {
+          return Scaffold(
+            backgroundColor: GlobalVariables.backgroundColor,
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(snapshot.data!.text),
+                    Container(
+                        padding: const EdgeInsets.all(8),
+                        color: GlobalVariables.backgroundColor,
+                        child: LogoutButtonWidget()),
+                    const HomeButtonWidget(),
+                    Expanded(
+                      child: SizedBox(
+                        height: 200,
+                        child: ListView.builder(
+                          itemCount: snapshot.data!.options.length,
+                          itemBuilder: (context, index) {
+                            return ElevatedButton(
+                                onPressed: () {},
+                                child:
+                                    Text(snapshot.data!.options[index].text));
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return Text('${snapshot.error}');
+        }
+        return const Center(child: CircularProgressIndicator());
+      }),
     );
   }
 }

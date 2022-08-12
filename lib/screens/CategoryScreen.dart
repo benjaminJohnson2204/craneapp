@@ -27,22 +27,9 @@ class CategoryScreen extends StatefulWidget {
 }
 
 class _CategoryScreenState extends State<CategoryScreen> {
-  late List<dynamic> _questions = [];
   final CheckAuthenticatedService authenticatedService =
       CheckAuthenticatedService();
   final QuestionsService questionsService = QuestionsService();
-
-  @override
-  void initState() {
-    super.initState();
-    questionsService
-        .getQuestionsUnderCategory(context: context, id: widget.category.id)
-        .then((List<dynamic> questions) {
-      setState(() {
-        _questions = questions;
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,20 +47,31 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   color: GlobalVariables.backgroundColor,
                   child: LogoutButtonWidget()),
               const HomeButtonWidget(),
-              Expanded(
-                child: SizedBox(
-                  height: 200,
-                  child: ListView.builder(
-                    itemCount: _questions.length,
-                    itemBuilder: (context, index) {
-                      return QuestionSelectorWidget(
-                          index: index,
-                          text: _questions[index].text,
-                          id: _questions[index].id);
-                    },
-                  ),
-                ),
-              ),
+              FutureBuilder<List<dynamic>>(
+                future: questionsService.getQuestionsUnderCategory(
+                    context: context, id: widget.category.id),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Expanded(
+                      child: SizedBox(
+                        height: 200,
+                        child: ListView.builder(
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (context, index) {
+                            return QuestionSelectorWidget(
+                                index: index,
+                                text: snapshot.data![index].text,
+                                id: snapshot.data![index].id);
+                          },
+                        ),
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text('${snapshot.error}');
+                  }
+                  return const Center(child: CircularProgressIndicator());
+                },
+              )
             ],
           ),
         ),
