@@ -10,22 +10,20 @@ import '../constants/util.dart';
 class LogoutService {
   void logout({required BuildContext context}) async {
     try {
-      http.Response res = await http.get(Uri.parse('$uri/auth/logout'));
+      http.Response res = await http.post(Uri.parse('$uri/auth/logout'));
       httpErrorHandle(
           response: res,
           context: context,
           onSuccess: () async {
             try {
               SharedPreferences prefs = await SharedPreferences.getInstance();
-              String? token = prefs.getString("x-auth-token");
               await prefs.setString("x-auth-token", "");
             } catch (error) {
               SharedPreferences.setMockInitialValues({});
             }
-            Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+            Navigator.pushNamed(context, LoginScreen.routeName);
           });
     } catch (error) {
-      print(error.toString());
       showSnackBar(context, error.toString());
     }
   }

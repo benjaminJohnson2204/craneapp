@@ -16,6 +16,7 @@ class QuestionScreen extends StatefulWidget {
 
 class _QuestionScreenState extends State<QuestionScreen> {
   final QuestionsService questionsService = QuestionsService();
+  List<bool>? revealOptions;
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +25,11 @@ class _QuestionScreenState extends State<QuestionScreen> {
           context: context, id: widget.questionId),
       builder: ((context, snapshot) {
         if (snapshot.hasData) {
+          setState(() {
+            revealOptions ??= [
+              for (var option in snapshot.data!.options) false
+            ];
+          });
           return Scaffold(
             backgroundColor: GlobalVariables.backgroundColor,
             body: SafeArea(
@@ -32,12 +38,13 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(snapshot.data!.text),
                     Container(
-                        padding: const EdgeInsets.all(8),
-                        color: GlobalVariables.backgroundColor,
-                        child: LogoutButtonWidget()),
+                      padding: const EdgeInsets.all(8),
+                      color: GlobalVariables.backgroundColor,
+                      child: LogoutButtonWidget(),
+                    ),
                     const HomeButtonWidget(),
+                    Text(snapshot.data!.text),
                     Expanded(
                       child: SizedBox(
                         height: 200,
@@ -45,7 +52,29 @@ class _QuestionScreenState extends State<QuestionScreen> {
                           itemCount: snapshot.data!.options.length,
                           itemBuilder: (context, index) {
                             return ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  if (snapshot.data!.options[index].isCorrect) {
+                                    setState(() {
+                                      revealOptions = [
+                                        for (var option
+                                            in snapshot.data!.options)
+                                          true
+                                      ];
+                                    });
+                                  } else {
+                                    setState(() {
+                                      revealOptions![index] = true;
+                                    });
+                                  }
+                                },
+                                style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(
+                                        revealOptions![index]
+                                            ? (snapshot.data!.options[index]
+                                                    .isCorrect
+                                                ? Colors.green
+                                                : Colors.red)
+                                            : Colors.blue)),
                                 child:
                                     Text(snapshot.data!.options[index].text));
                           },

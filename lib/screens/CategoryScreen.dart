@@ -7,7 +7,7 @@ import 'package:craneapp/widgets/logout_button.dart';
 import 'package:craneapp/widgets/question_selector.dart';
 import 'package:flutter/material.dart';
 
-import '../models/questionPreview.dart';
+import '../models/question.dart';
 
 class CategoryScreen extends StatefulWidget {
   static const String routeName = "/category";
@@ -39,9 +39,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   color: GlobalVariables.backgroundColor,
                   child: LogoutButtonWidget()),
               const HomeButtonWidget(),
-              FutureBuilder<List<QuestionPreview>>(
+              FutureBuilder<List<Question>>(
                 future: questionsService.getQuestionsUnderCategory(
-                    context: context, id: widget.category.id),
+                    context: context, category: widget.category.name),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return Expanded(

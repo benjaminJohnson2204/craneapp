@@ -23,7 +23,6 @@ class CheckAuthenticatedService {
           headers: {"x-auth-token": token!});
       return jsonDecode(res.body)["valid"];
     } catch (error) {
-      print(error.toString());
       showSnackBar(context, error.toString());
       return false;
     }

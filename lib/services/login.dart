@@ -25,7 +25,6 @@ class LoginService {
           onSuccess: () async {
             try {
               SharedPreferences prefs = await SharedPreferences.getInstance();
-              String? token = prefs.getString("x-auth-token");
               await prefs.setString(
                   "x-auth-token", jsonDecode(res.body)["token"]);
             } catch (error) {

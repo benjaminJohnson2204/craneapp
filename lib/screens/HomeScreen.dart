@@ -24,66 +24,80 @@ class _HomeScreenState extends State<HomeScreen> {
   final CategoriesService categoriesService = CategoriesService();
 
   @override
-  void initState() {
-    super.initState();
-    authenticatedService
-        .checkAuthenticated(context: context)
-        .then((bool authenticated) {
-      if (!authenticated) {
-        Navigator.pushNamed(context, LoginScreen.routeName);
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: GlobalVariables.backgroundColor,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text("Welcome"),
-              Container(
-                padding: const EdgeInsets.all(8),
-                color: GlobalVariables.backgroundColor,
-                child: LogoutButtonWidget(),
-              ),
-              FutureBuilder<List<Category>>(
-                  future: categoriesService.getAllCategories(context: context),
-                  builder: ((context, snapshot) {
-                    if (snapshot.hasData) {
-                      return Expanded(
-                        child: SizedBox(
-                          height: 200,
-                          child: ListView.builder(
-                            itemCount: snapshot.data!.length,
-                            itemBuilder: (context, index) {
-                              return CategorySelectorWidget(
-                                  name: snapshot.data![index].name,
-                                  onTap: () {
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => CategoryScreen(
-                                              category: snapshot.data![index]),
-                                        ));
-                                  });
-                            },
-                          ),
+    return FutureBuilder<bool>(
+        future: authenticatedService.checkAuthenticated(context: context),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data!) {
+              return Scaffold(
+                backgroundColor: GlobalVariables.backgroundColor,
+                body: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("Welcome"),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          color: GlobalVariables.backgroundColor,
+                          child: LogoutButtonWidget(),
                         ),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Text('${snapshot.error}');
-                    }
-                    return const Center(child: CircularProgressIndicator());
-                  }))
-            ],
-          ),
-        ),
-      ),
-    );
+                        FutureBuilder<List<Map<String, dynamic>>>(
+                            future: categoriesService
+                                .getProgressOnAllCategories(context: context),
+                            builder: ((context, snapshot) {
+                              if (snapshot.hasData) {
+                                return Expanded(
+                                  child: Column(
+                                    children: [
+                                      const Text(
+                                          "Browse questions by category:"),
+                                      SizedBox(
+                                        height: 200,
+                                        child: ListView.builder(
+                                          itemCount: snapshot.data!.length,
+                                          itemBuilder: (context, index) {
+                                            return CategorySelectorWidget(
+                                                name:
+                                                    '${snapshot.data![index]["category"].name}: ${snapshot.data![index]["correct"]} / ${snapshot.data![index]["total"]}',
+                                                onTap: () {
+                                                  Navigator.pushReplacement(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            CategoryScreen(
+                                                                category: snapshot
+                                                                            .data![
+                                                                        index][
+                                                                    "category"]),
+                                                      ));
+                                                });
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              } else if (snapshot.hasError) {
+                                return Text('${snapshot.error}');
+                              }
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            })),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            } else {
+              Navigator.pushNamed(context, LoginScreen.routeName);
+            }
+          } else if (snapshot.hasError) {
+            return Text('${snapshot.error}');
+          }
+          return const Center(child: CircularProgressIndicator());
+        });
   }
 }
