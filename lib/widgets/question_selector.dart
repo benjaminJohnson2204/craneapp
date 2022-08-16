@@ -4,9 +4,12 @@ import 'package:flutter/material.dart';
 class QuestionSelectorWidget extends StatelessWidget {
   final int index;
   final String text;
-  final String id;
+  final String category;
   const QuestionSelectorWidget(
-      {Key? key, required this.index, required this.text, required this.id})
+      {Key? key,
+      required this.index,
+      required this.text,
+      required this.category})
       : super(key: key);
 
   @override
@@ -16,7 +19,8 @@ class QuestionSelectorWidget extends StatelessWidget {
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (_) => QuestionScreen(questionId: id)));
+                  builder: (_) => QuestionScreen(
+                      category: category, questionIndex: index)));
         },
         child: Text("${index + 1} $text"));
   }

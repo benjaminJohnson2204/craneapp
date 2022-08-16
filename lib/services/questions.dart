@@ -9,6 +9,8 @@ import '../models/option.dart';
 import '../models/question.dart';
 
 class QuestionsService {
+  Map<String, List<Question>> questionsByCategory = {};
+
   Future<List<Question>> getQuestionsUnderCategory(
       {required BuildContext context, required String category}) async {
     try {
@@ -21,12 +23,11 @@ class QuestionsService {
               id: question["_id"],
               options: [
                 for (var option in question["options"])
-                  Option(
-                      text: option["text"],
-                      isCorrect: option["isCorrect"] == "true")
+                  Option(text: option["text"], isCorrect: option["isCorrect"])
               ],
-              categoryId: question["category"])
+              category: question["category"])
       ];
+      questionsByCategory.putIfAbsent(category, () => result);
       return result;
     } catch (error) {
       showSnackBar(context, error.toString());
@@ -34,27 +35,39 @@ class QuestionsService {
     }
   }
 
-  Future<Question> getQuestionById(
-      {required BuildContext context, required String id}) async {
-    try {
-      http.Response res = await http.get(Uri.parse('$uri/question/$id'));
-      dynamic question = jsonDecode(res.body)["question"];
-      print(question["options"][0].isCorrect);
-      print(question["options"][1].isCorrect);
-      return Question(
-          text: question["questionText"],
-          id: question["_id"],
-          options: [
-            for (var option in question["options"])
-              Option(
-                  text: option["text"],
-                  isCorrect: option["isCorrect"] == "true")
-          ],
-          categoryId: question["category"]);
-    } catch (error) {
-      showSnackBar(context, error.toString());
-      return Question(
-          text: "error", id: "error", options: [], categoryId: "error");
+  Future<Question> getQuestionUnderCategoryByIndex(
+      {required BuildContext context,
+      required String category,
+      required int index}) async {
+    if (questionsByCategory.containsKey(category)) {
+      return questionsByCategory[category]![index];
     }
+    await getQuestionsUnderCategory(context: context, category: category);
+    return questionsByCategory[category]![index];
   }
+
+  int getQuestionCountUnderCategory(
+      {required BuildContext context, required String category}) {
+    return questionsByCategory[category]!.length;
+  }
+
+  // Future<Question> getQuestionById(
+  //     {required BuildContext context, required String id}) async {
+  //   try {
+  //     http.Response res = await http.get(Uri.parse('$uri/question/$id'));
+  //     dynamic question = jsonDecode(res.body)["question"];
+  //     return Question(
+  //         text: question["questionText"],
+  //         id: question["_id"],
+  //         options: [
+  //           for (var option in question["options"])
+  //             Option(text: option["text"], isCorrect: option["isCorrect"])
+  //         ],
+  //         category: question["category"]);
+  //   } catch (error) {
+  //     showSnackBar(context, error.toString());
+  //     return Question(
+  //         text: "error", id: "error", options: [], category: "error");
+  //   }
+  // }
 }

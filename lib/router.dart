@@ -5,8 +5,6 @@ import 'package:craneapp/screens/RegisterScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'models/category.dart';
-
 Route<dynamic> generateRoute(RouteSettings routeSettings) {
   switch (routeSettings.name) {
     case HomeScreen.routeName:

@@ -1,5 +1,4 @@
 import 'package:craneapp/constants/global_variables.dart';
-import 'package:craneapp/models/category.dart';
 import 'package:craneapp/screens/CategoryScreen.dart';
 import 'package:craneapp/screens/LoginScreen.dart';
 import 'package:craneapp/services/categories.dart';

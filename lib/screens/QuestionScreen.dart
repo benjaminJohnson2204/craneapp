@@ -1,3 +1,4 @@
+import 'package:craneapp/screens/CategoryScreen.dart';
 import 'package:craneapp/services/questions.dart';
 import 'package:flutter/material.dart';
 
@@ -7,8 +8,11 @@ import '../widgets/home_button.dart';
 import '../widgets/logout_button.dart';
 
 class QuestionScreen extends StatefulWidget {
-  final String questionId;
-  const QuestionScreen({Key? key, required this.questionId}) : super(key: key);
+  final String category;
+  final int questionIndex;
+  const QuestionScreen(
+      {Key? key, required this.category, required this.questionIndex})
+      : super(key: key);
 
   @override
   State<QuestionScreen> createState() => _QuestionScreenState();
@@ -16,20 +20,18 @@ class QuestionScreen extends StatefulWidget {
 
 class _QuestionScreenState extends State<QuestionScreen> {
   final QuestionsService questionsService = QuestionsService();
-  List<bool>? revealOptions;
+  List<bool>? _revealOptions;
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Question>(
-      future: questionsService.getQuestionById(
-          context: context, id: widget.questionId),
+      future: questionsService.getQuestionUnderCategoryByIndex(
+          context: context,
+          category: widget.category,
+          index: widget.questionIndex),
       builder: ((context, snapshot) {
         if (snapshot.hasData) {
-          setState(() {
-            revealOptions ??= [
-              for (var option in snapshot.data!.options) false
-            ];
-          });
+          _revealOptions ??= [for (var option in snapshot.data!.options) false];
           return Scaffold(
             backgroundColor: GlobalVariables.backgroundColor,
             body: SafeArea(
@@ -44,6 +46,66 @@ class _QuestionScreenState extends State<QuestionScreen> {
                       child: LogoutButtonWidget(),
                     ),
                     const HomeButtonWidget(),
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => CategoryScreen(
+                                category: snapshot.data!.category,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Text(snapshot.data!.category)),
+                    Row(
+                      children: [
+                        IgnorePointer(
+                          ignoring: widget.questionIndex == 0,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => QuestionScreen(
+                                          category: widget.category,
+                                          questionIndex:
+                                              widget.questionIndex - 1)));
+                            },
+                            child: const Text("Previous"),
+                          ),
+                        ),
+                        IgnorePointer(
+                          ignoring: widget.questionIndex + 1 ==
+                              questionsService.getQuestionCountUnderCategory(
+                                  context: context, category: widget.category),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => QuestionScreen(
+                                          category: widget.category,
+                                          questionIndex:
+                                              widget.questionIndex + 1)));
+                            },
+                            child: const Text("Next"),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => QuestionScreen(
+                                        category: widget.category,
+                                        questionIndex:
+                                            widget.questionIndex + 1)));
+                          },
+                          child: const Text("Next"),
+                        ),
+                      ],
+                    ),
                     Text(snapshot.data!.text),
                     Expanded(
                       child: SizedBox(
@@ -54,22 +116,37 @@ class _QuestionScreenState extends State<QuestionScreen> {
                             return ElevatedButton(
                                 onPressed: () {
                                   if (snapshot.data!.options[index].isCorrect) {
+                                    // Reveal all options when correct option is chosen
                                     setState(() {
-                                      revealOptions = [
+                                      _revealOptions = [
                                         for (var option
                                             in snapshot.data!.options)
                                           true
                                       ];
                                     });
                                   } else {
+                                    // Reveal only this option if it's incorrect
                                     setState(() {
-                                      revealOptions![index] = true;
+                                      _revealOptions![index] = true;
                                     });
+                                    if (_revealOptions!
+                                            .where((option) => !option)
+                                            .length <=
+                                        1) {
+                                      // Reveal all options once all incorrect options are chosen
+                                      setState(() {
+                                        _revealOptions = [
+                                          for (var option
+                                              in snapshot.data!.options)
+                                            true
+                                        ];
+                                      });
+                                    }
                                   }
                                 },
                                 style: ButtonStyle(
                                     backgroundColor: MaterialStateProperty.all(
-                                        revealOptions![index]
+                                        _revealOptions![index]
                                             ? (snapshot.data!.options[index]
                                                     .isCorrect
                                                 ? Colors.green

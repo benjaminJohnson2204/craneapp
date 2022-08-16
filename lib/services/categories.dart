@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:craneapp/constants/global_variables.dart';
-import 'package:craneapp/models/category.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,13 +8,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/util.dart';
 
 class CategoriesService {
-  Future<List<Category>> getAllCategories(
-      {required BuildContext context}) async {
+  Future<List<String>> getAllCategories({required BuildContext context}) async {
     try {
       http.Response res = await http.get(Uri.parse('$uri/category/all'));
-      List<Category> categories = [
-        for (var category in jsonDecode(res.body)["categories"])
-          Category(name: category)
+      List<String> categories = [
+        for (var category in jsonDecode(res.body)["categories"]) category
       ];
       return categories;
     } catch (error) {
@@ -41,7 +38,7 @@ class CategoriesService {
       List<Map<String, dynamic>> categories = [];
       for (var category in jsonDecode(res.body)) {
         categories.add({
-          "category": Category(name: category["category"]),
+          "category": category["category"],
           "correct": category["correct"],
           "total": category["total"],
         });

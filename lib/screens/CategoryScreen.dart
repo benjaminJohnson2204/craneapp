@@ -1,5 +1,4 @@
 import 'package:craneapp/constants/global_variables.dart';
-import 'package:craneapp/models/category.dart';
 import 'package:craneapp/services/checkAuthenticated.dart';
 import 'package:craneapp/services/questions.dart';
 import 'package:craneapp/widgets/home_button.dart';
@@ -11,7 +10,7 @@ import '../models/question.dart';
 
 class CategoryScreen extends StatefulWidget {
   static const String routeName = "/category";
-  final Category category;
+  final String category;
   const CategoryScreen({Key? key, required this.category}) : super(key: key);
 
   @override
@@ -33,7 +32,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(widget.category.name),
+              Text(widget.category),
               Container(
                   padding: const EdgeInsets.all(8),
                   color: GlobalVariables.backgroundColor,
@@ -41,7 +40,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
               const HomeButtonWidget(),
               FutureBuilder<List<Question>>(
                 future: questionsService.getQuestionsUnderCategory(
-                    context: context, category: widget.category.name),
+                    context: context, category: widget.category),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return Expanded(
@@ -53,7 +52,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                             return QuestionSelectorWidget(
                                 index: index,
                                 text: snapshot.data![index].text,
-                                id: snapshot.data![index].id);
+                                category: widget.category);
                           },
                         ),
                       ),
