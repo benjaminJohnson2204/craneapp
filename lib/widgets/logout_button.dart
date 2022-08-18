@@ -12,6 +12,8 @@ class LogoutButtonWidget extends StatelessWidget {
       onPressed: () {
         logoutService.logout(context: context);
       },
+      style:
+          ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red)),
       child: const Text("Logout"),
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const String uri = 'https://craneapp-server.herokuapp.com';
+const String uri = 'https://studying-app-server.herokuapp.com';
 
 class GlobalVariables {
   static const backgroundColor = Colors.white;

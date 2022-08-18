@@ -36,7 +36,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text("Welcome"),
                         Container(
                           padding: const EdgeInsets.all(8),
                           color: GlobalVariables.backgroundColor,
@@ -51,7 +50,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: Column(
                                     children: [
                                       const Text(
-                                          "Browse questions by category:"),
+                                        "Welcome!",
+                                        textScaleFactor: 4,
+                                      ),
+                                      const Text(
+                                          "Browse questions by category:",
+                                          textScaleFactor: 2),
                                       SizedBox(
                                         height: 200,
                                         child: ListView.builder(
