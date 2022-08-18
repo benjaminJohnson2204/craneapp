@@ -52,7 +52,31 @@ class _CategoryScreenState extends State<CategoryScreen> {
                             return QuestionSelectorWidget(
                                 index: index,
                                 text: snapshot.data![index].text,
-                                category: widget.category);
+                                category: widget.category,
+                                color: () {
+                                  bool foundCorrect = false,
+                                      foundSelected = false;
+                                  for (int i = 0;
+                                      i <
+                                          snapshot.data![index]
+                                              .selectedOptionsIndices.length;
+                                      i++) {
+                                    if (snapshot.data![index]
+                                        .selectedOptionsIndices[i]) {
+                                      if (snapshot
+                                          .data![index].options[i].isCorrect) {
+                                        foundCorrect = true;
+                                      } else {
+                                        foundSelected = true;
+                                      }
+                                    }
+                                  }
+                                  return foundCorrect
+                                      ? Colors.green
+                                      : (foundSelected
+                                          ? Colors.red
+                                          : Colors.blue);
+                                }());
                           },
                         ),
                       ),

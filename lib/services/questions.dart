@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:craneapp/constants/global_variables.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/util.dart';
 import '../models/option.dart';
@@ -13,11 +14,25 @@ class QuestionsService {
 
   Future<List<Question>> getQuestionsUnderCategory(
       {required BuildContext context, required String category}) async {
+    if (questionsByCategory.containsKey(category)) {
+      return questionsByCategory[category]!;
+    }
+    SharedPreferences prefs;
+    String? token;
     try {
-      http.Response res =
+      prefs = await SharedPreferences.getInstance();
+      token = prefs.getString("x-auth-token");
+    } catch (error) {
+      SharedPreferences.setMockInitialValues({});
+    }
+    try {
+      http.Response questionsRes =
           await http.get(Uri.parse('$uri/question/category/$category'));
+      http.Response answersRes = await http.get(
+          Uri.parse('$uri/userAnswer/category/$category'),
+          headers: {"x-auth-token": token!});
       List<Question> result = [
-        for (var question in jsonDecode(res.body)["questions"])
+        for (var question in jsonDecode(questionsRes.body)["questions"])
           Question(
               text: question["questionText"],
               id: question["_id"],
@@ -25,7 +40,22 @@ class QuestionsService {
                 for (var option in question["options"])
                   Option(text: option["text"], isCorrect: option["isCorrect"])
               ],
-              category: question["category"])
+              category: question["category"],
+              selectedOptionsIndices: () {
+                List<int> userAnswers = [];
+                for (var userAnswer
+                    in jsonDecode(answersRes.body)["userAnswers"]) {
+                  if (userAnswer["question"] == question["_id"]) {
+                    userAnswers.add(userAnswer["selectedOptionIndex"]);
+                  }
+                }
+                List<bool> selectedOptionsIndices = [];
+                for (var option in question["options"]) {
+                  selectedOptionsIndices
+                      .add(userAnswers.contains(option["index"]));
+                }
+                return selectedOptionsIndices;
+              }())
       ];
       questionsByCategory.putIfAbsent(category, () => result);
       return result;
@@ -51,23 +81,35 @@ class QuestionsService {
     return questionsByCategory[category]!.length;
   }
 
-  // Future<Question> getQuestionById(
-  //     {required BuildContext context, required String id}) async {
-  //   try {
-  //     http.Response res = await http.get(Uri.parse('$uri/question/$id'));
-  //     dynamic question = jsonDecode(res.body)["question"];
-  //     return Question(
-  //         text: question["questionText"],
-  //         id: question["_id"],
-  //         options: [
-  //           for (var option in question["options"])
-  //             Option(text: option["text"], isCorrect: option["isCorrect"])
-  //         ],
-  //         category: question["category"]);
-  //   } catch (error) {
-  //     showSnackBar(context, error.toString());
-  //     return Question(
-  //         text: "error", id: "error", options: [], category: "error");
-  //   }
-  // }
+  Future<bool> answerQuestion(
+      {required BuildContext context,
+      required String category,
+      required int questionIndex,
+      required int selectedOptionIndex}) async {
+    SharedPreferences prefs;
+    String? token;
+    try {
+      prefs = await SharedPreferences.getInstance();
+      token = prefs.getString("x-auth-token");
+    } catch (error) {
+      SharedPreferences.setMockInitialValues({});
+    }
+    try {
+      Question question = await getQuestionUnderCategoryByIndex(
+          context: context, category: category, index: questionIndex);
+      http.Response res = await http.post(Uri.parse('$uri/userAnswer/answer'),
+          body: jsonEncode({
+            "questionId": question.id,
+            "selectedOptionIndex": selectedOptionIndex
+          }),
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": token!
+          });
+      return jsonDecode(res.body)["correct"];
+    } catch (error) {
+      showSnackBar(context, error.toString());
+      return false;
+    }
+  }
 }

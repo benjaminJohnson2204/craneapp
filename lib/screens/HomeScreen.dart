@@ -4,7 +4,6 @@ import 'package:craneapp/screens/LoginScreen.dart';
 import 'package:craneapp/services/categories.dart';
 import 'package:craneapp/services/checkAuthenticated.dart';
 import 'package:craneapp/services/logout.dart';
-import 'package:craneapp/widgets/category_selector.dart';
 import 'package:craneapp/widgets/logout_button.dart';
 import 'package:flutter/material.dart';
 
@@ -58,10 +57,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                         child: ListView.builder(
                                           itemCount: snapshot.data!.length,
                                           itemBuilder: (context, index) {
-                                            return CategorySelectorWidget(
-                                                name:
-                                                    '${snapshot.data![index]["category"].name}: ${snapshot.data![index]["correct"]} / ${snapshot.data![index]["total"]}',
-                                                onTap: () {
+                                            return ElevatedButton(
+                                                onPressed: () {
                                                   Navigator.pushReplacement(
                                                       context,
                                                       MaterialPageRoute(
@@ -72,7 +69,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                         index][
                                                                     "category"]),
                                                       ));
-                                                });
+                                                },
+                                                style: ButtonStyle(
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all(
+                                                          snapshot.data![index][
+                                                                      "correct"] ==
+                                                                  snapshot.data![
+                                                                          index]
+                                                                      ["total"]
+                                                              ? Colors.green
+                                                              : Colors.blue),
+                                                ),
+                                                child: Text(
+                                                    '${snapshot.data![index]["category"]}: ${snapshot.data![index]["correct"]} / ${snapshot.data![index]["total"]}'));
                                           },
                                         ),
                                       ),

@@ -31,7 +31,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
           index: widget.questionIndex),
       builder: ((context, snapshot) {
         if (snapshot.hasData) {
-          _revealOptions ??= [for (var option in snapshot.data!.options) false];
+          _revealOptions ??= snapshot.data!.selectedOptionsIndices;
           return Scaffold(
             backgroundColor: GlobalVariables.backgroundColor,
             body: SafeArea(
@@ -92,18 +92,6 @@ class _QuestionScreenState extends State<QuestionScreen> {
                             child: const Text("Next"),
                           ),
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => QuestionScreen(
-                                        category: widget.category,
-                                        questionIndex:
-                                            widget.questionIndex + 1)));
-                          },
-                          child: const Text("Next"),
-                        ),
                       ],
                     ),
                     Text(snapshot.data!.text),
@@ -113,47 +101,62 @@ class _QuestionScreenState extends State<QuestionScreen> {
                         child: ListView.builder(
                           itemCount: snapshot.data!.options.length,
                           itemBuilder: (context, index) {
-                            return ElevatedButton(
-                                onPressed: () {
-                                  if (snapshot.data!.options[index].isCorrect) {
-                                    // Reveal all options when correct option is chosen
-                                    setState(() {
-                                      _revealOptions = [
-                                        for (var option
-                                            in snapshot.data!.options)
-                                          true
-                                      ];
+                            return IgnorePointer(
+                              ignoring:
+                                  snapshot.data!.selectedOptionsIndices[index],
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    questionsService
+                                        .answerQuestion(
+                                            context: context,
+                                            category: widget.category,
+                                            questionIndex: widget.questionIndex,
+                                            selectedOptionIndex: index)
+                                        .then((isCorrect) {
+                                      if (isCorrect) {
+                                        // Reveal all options when correct option is chosen
+                                        setState(() {
+                                          _revealOptions = [
+                                            for (var option
+                                                in snapshot.data!.options)
+                                              true
+                                          ];
+                                        });
+                                      } else {
+                                        // Reveal only this option if it's incorrect
+                                        setState(() {
+                                          _revealOptions![index] = true;
+                                        });
+                                        if (_revealOptions!
+                                                .where((option) => !option)
+                                                .length <=
+                                            1) {
+                                          // Reveal all options once all incorrect options are chosen
+                                          setState(() {
+                                            _revealOptions = [
+                                              for (var option
+                                                  in snapshot.data!.options)
+                                                true
+                                            ];
+                                          });
+                                        }
+                                      }
                                     });
-                                  } else {
-                                    // Reveal only this option if it's incorrect
-                                    setState(() {
-                                      _revealOptions![index] = true;
-                                    });
-                                    if (_revealOptions!
-                                            .where((option) => !option)
-                                            .length <=
-                                        1) {
-                                      // Reveal all options once all incorrect options are chosen
-                                      setState(() {
-                                        _revealOptions = [
-                                          for (var option
-                                              in snapshot.data!.options)
-                                            true
-                                        ];
-                                      });
-                                    }
-                                  }
-                                },
-                                style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all(
-                                        _revealOptions![index]
-                                            ? (snapshot.data!.options[index]
-                                                    .isCorrect
-                                                ? Colors.green
-                                                : Colors.red)
-                                            : Colors.blue)),
-                                child:
-                                    Text(snapshot.data!.options[index].text));
+                                  },
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                              _revealOptions![index]
+                                                  ? (snapshot
+                                                          .data!
+                                                          .options[index]
+                                                          .isCorrect
+                                                      ? Colors.green
+                                                      : Colors.red)
+                                                  : Colors.blue)),
+                                  child:
+                                      Text(snapshot.data!.options[index].text)),
+                            );
                           },
                         ),
                       ),
