@@ -40,25 +40,143 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      color: GlobalVariables.backgroundColor,
-                      child: LogoutButtonWidget(),
-                    ),
-                    const HomeButtonWidget(),
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => CategoryScreen(
-                                category: snapshot.data!.category,
-                              ),
-                            ),
-                          );
-                        },
-                        child: Text(snapshot.data!.category)),
                     Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const HomeButtonWidget(),
+                          ElevatedButton(
+                              onPressed: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => CategoryScreen(
+                                      category: snapshot.data!.category,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Text(snapshot.data!.category)),
+                          LogoutButtonWidget(),
+                        ]),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        snapshot.data!.text,
+                        textScaleFactor: 2,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Expanded(
+                      child: SizedBox(
+                        height: 200,
+                        child: ListView.builder(
+                          itemCount: snapshot.data!.options.length,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              padding: const EdgeInsets.all(8),
+                              child: Column(
+                                children: [
+                                  IgnorePointer(
+                                    ignoring: snapshot
+                                        .data!.selectedOptionsIndices[index],
+                                    child: ElevatedButton(
+                                        onPressed: () {
+                                          questionsService
+                                              .answerQuestion(
+                                                  context: context,
+                                                  category: widget.category,
+                                                  questionIndex:
+                                                      widget.questionIndex,
+                                                  selectedOptionIndex: index)
+                                              .then((isCorrect) {
+                                            if (isCorrect) {
+                                              // Reveal all options when correct option is chosen
+                                              setState(() {
+                                                _revealOptions = [
+                                                  for (var option
+                                                      in snapshot.data!.options)
+                                                    true
+                                                ];
+                                              });
+                                            } else {
+                                              // Reveal only this option if it's incorrect
+                                              setState(() {
+                                                _revealOptions![index] = true;
+                                              });
+                                              if (_revealOptions!
+                                                      .where(
+                                                          (option) => !option)
+                                                      .length <=
+                                                  1) {
+                                                // Reveal all options once all incorrect options are chosen
+                                                setState(() {
+                                                  _revealOptions = [
+                                                    for (var option in snapshot
+                                                        .data!.options)
+                                                      true
+                                                  ];
+                                                });
+                                              }
+                                            }
+                                          });
+                                        },
+                                        style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.all(
+                                                    _revealOptions![index]
+                                                        ? (snapshot
+                                                                .data!
+                                                                .options[index]
+                                                                .isCorrect
+                                                            ? Colors.green
+                                                            : Colors.red)
+                                                        : Colors.blue)),
+                                        child: Text(snapshot
+                                            .data!.options[index].text)),
+                                  ),
+                                  _revealOptions![index]
+                                      ? Text(snapshot
+                                          .data!.options[index].explanation)
+                                      : const Text("")
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: IgnorePointer(
+                        ignoring: !_revealOptions!.any(((element) => element)),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            questionsService
+                                .resetAnswersToQuestion(
+                                    context: context,
+                                    category: widget.category,
+                                    questionIndex: widget.questionIndex)
+                                .then(
+                                  (result) => Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => QuestionScreen(
+                                        category: widget.category,
+                                        questionIndex: widget.questionIndex,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                          },
+                          style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all(Colors.red)),
+                          child: const Text("Reset"),
+                        ),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IgnorePointer(
                           ignoring: widget.questionIndex == 0,
@@ -93,73 +211,6 @@ class _QuestionScreenState extends State<QuestionScreen> {
                           ),
                         ),
                       ],
-                    ),
-                    Text(snapshot.data!.text),
-                    Expanded(
-                      child: SizedBox(
-                        height: 200,
-                        child: ListView.builder(
-                          itemCount: snapshot.data!.options.length,
-                          itemBuilder: (context, index) {
-                            return IgnorePointer(
-                              ignoring:
-                                  snapshot.data!.selectedOptionsIndices[index],
-                              child: ElevatedButton(
-                                  onPressed: () {
-                                    questionsService
-                                        .answerQuestion(
-                                            context: context,
-                                            category: widget.category,
-                                            questionIndex: widget.questionIndex,
-                                            selectedOptionIndex: index)
-                                        .then((isCorrect) {
-                                      if (isCorrect) {
-                                        // Reveal all options when correct option is chosen
-                                        setState(() {
-                                          _revealOptions = [
-                                            for (var option
-                                                in snapshot.data!.options)
-                                              true
-                                          ];
-                                        });
-                                      } else {
-                                        // Reveal only this option if it's incorrect
-                                        setState(() {
-                                          _revealOptions![index] = true;
-                                        });
-                                        if (_revealOptions!
-                                                .where((option) => !option)
-                                                .length <=
-                                            1) {
-                                          // Reveal all options once all incorrect options are chosen
-                                          setState(() {
-                                            _revealOptions = [
-                                              for (var option
-                                                  in snapshot.data!.options)
-                                                true
-                                            ];
-                                          });
-                                        }
-                                      }
-                                    });
-                                  },
-                                  style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              _revealOptions![index]
-                                                  ? (snapshot
-                                                          .data!
-                                                          .options[index]
-                                                          .isCorrect
-                                                      ? Colors.green
-                                                      : Colors.red)
-                                                  : Colors.blue)),
-                                  child:
-                                      Text(snapshot.data!.options[index].text)),
-                            );
-                          },
-                        ),
-                      ),
                     ),
                   ],
                 ),

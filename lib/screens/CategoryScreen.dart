@@ -1,4 +1,5 @@
 import 'package:craneapp/constants/global_variables.dart';
+import 'package:craneapp/services/categories.dart';
 import 'package:craneapp/services/checkAuthenticated.dart';
 import 'package:craneapp/services/questions.dart';
 import 'package:craneapp/widgets/home_button.dart';
@@ -21,6 +22,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   final CheckAuthenticatedService authenticatedService =
       CheckAuthenticatedService();
   final QuestionsService questionsService = QuestionsService();
+  final CategoriesService categoriesService = CategoriesService();
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +32,30 @@ class _CategoryScreenState extends State<CategoryScreen> {
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(widget.category),
-              Container(
-                  padding: const EdgeInsets.all(8),
-                  color: GlobalVariables.backgroundColor,
-                  child: LogoutButtonWidget()),
-              const HomeButtonWidget(),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                const HomeButtonWidget(),
+                LogoutButtonWidget(),
+              ]),
+              FutureBuilder<Map<String, int>>(
+                future: categoriesService.getProgressOnCategory(
+                    context: context, category: widget.category),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Text(
+                        '${widget.category} (${snapshot.data!["correct"]} / ${snapshot.data!["total"]})',
+                        textScaleFactor: 2,
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text('${snapshot.error}');
+                  }
+                  return const Center(child: CircularProgressIndicator());
+                },
+              ),
               FutureBuilder<List<Question>>(
                 future: questionsService.getQuestionsUnderCategory(
                     context: context, category: widget.category),
@@ -86,7 +104,29 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   }
                   return const Center(child: CircularProgressIndicator());
                 },
-              )
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: ElevatedButton(
+                  onPressed: () {
+                    questionsService
+                        .resetAnswersToQuestionsByCategory(
+                            context: context, category: widget.category)
+                        .then(
+                          (result) => Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  CategoryScreen(category: widget.category),
+                            ),
+                          ),
+                        );
+                  },
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.red)),
+                  child: const Text("Reset"),
+                ),
+              ),
             ],
           ),
         ),

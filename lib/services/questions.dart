@@ -38,7 +38,10 @@ class QuestionsService {
               id: question["_id"],
               options: [
                 for (var option in question["options"])
-                  Option(text: option["text"], isCorrect: option["isCorrect"])
+                  Option(
+                      text: option["text"],
+                      explanation: option["explanation"],
+                      isCorrect: option["isCorrect"])
               ],
               category: question["category"],
               selectedOptionsIndices: () {
@@ -110,6 +113,65 @@ class QuestionsService {
     } catch (error) {
       showSnackBar(context, error.toString());
       return false;
+    }
+  }
+
+  Future<void> resetAnswersToQuestion(
+      {required BuildContext context,
+      required String category,
+      required int questionIndex}) async {
+    SharedPreferences prefs;
+    String? token;
+    try {
+      prefs = await SharedPreferences.getInstance();
+      token = prefs.getString("x-auth-token");
+    } catch (error) {
+      SharedPreferences.setMockInitialValues({});
+    }
+    try {
+      Question question = await getQuestionUnderCategoryByIndex(
+          context: context, category: category, index: questionIndex);
+      await http.post(
+          Uri.parse('$uri/userAnswer/reset/question/${question.id}'),
+          headers: {"x-auth-token": token!});
+    } catch (error) {
+      showSnackBar(context, error.toString());
+    }
+  }
+
+  Future<void> resetAnswersToQuestionsByCategory(
+      {required BuildContext context, required String category}) async {
+    SharedPreferences prefs;
+    String? token;
+    try {
+      prefs = await SharedPreferences.getInstance();
+      token = prefs.getString("x-auth-token");
+    } catch (error) {
+      SharedPreferences.setMockInitialValues({});
+    }
+    try {
+      await http.post(Uri.parse('$uri/userAnswer/reset/category/$category'),
+          headers: {"x-auth-token": token!});
+    } catch (error) {
+      showSnackBar(context, error.toString());
+    }
+  }
+
+  Future<void> resetAnswersToAllQuestions(
+      {required BuildContext context}) async {
+    SharedPreferences prefs;
+    String? token;
+    try {
+      prefs = await SharedPreferences.getInstance();
+      token = prefs.getString("x-auth-token");
+    } catch (error) {
+      SharedPreferences.setMockInitialValues({});
+    }
+    try {
+      await http.post(Uri.parse('$uri/userAnswer/reset'),
+          headers: {"x-auth-token": token!});
+    } catch (error) {
+      showSnackBar(context, error.toString());
     }
   }
 }

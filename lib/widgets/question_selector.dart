@@ -25,7 +25,7 @@ class QuestionSelectorWidget extends StatelessWidget {
                     QuestionScreen(category: category, questionIndex: index)));
       },
       style: ButtonStyle(backgroundColor: MaterialStateProperty.all(color)),
-      child: Text("${index + 1} $text"),
+      child: Text("${index + 1}"),
     );
   }
 }

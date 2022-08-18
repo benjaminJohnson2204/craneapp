@@ -52,9 +52,18 @@ class CategoriesService {
 
   Future<Map<String, int>> getProgressOnCategory(
       {required BuildContext context, required String category}) async {
+    SharedPreferences prefs;
+    String? token;
     try {
-      http.Response res = await http
-          .get(Uri.parse('$uri/question/fractionComplete/${category}'));
+      prefs = await SharedPreferences.getInstance();
+      token = prefs.getString("x-auth-token");
+    } catch (error) {
+      SharedPreferences.setMockInitialValues({});
+    }
+    try {
+      http.Response res = await http.get(
+          Uri.parse('$uri/question/fractionComplete/$category'),
+          headers: {"x-auth-token": token!});
       return {
         "correct": jsonDecode(res.body)["correct"],
         "total": jsonDecode(res.body)["total"]
