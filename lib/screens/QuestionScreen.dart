@@ -21,6 +21,7 @@ class QuestionScreen extends StatefulWidget {
 class _QuestionScreenState extends State<QuestionScreen> {
   final QuestionsService questionsService = QuestionsService();
   List<bool>? _revealOptions;
+  int _bottomNavbarSelectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -58,12 +59,15 @@ class _QuestionScreenState extends State<QuestionScreen> {
                               child: Text(snapshot.data!.category)),
                           LogoutButtonWidget(),
                         ]),
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text(
-                        snapshot.data!.text,
-                        textScaleFactor: 2,
-                        textAlign: TextAlign.center,
+                    Align(
+                      alignment: Alignment.center,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text(
+                          snapshot.data!.text,
+                          textScaleFactor: 2,
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
                     Expanded(
@@ -77,10 +81,13 @@ class _QuestionScreenState extends State<QuestionScreen> {
                               child: Column(
                                 children: [
                                   IgnorePointer(
-                                    ignoring: snapshot
-                                        .data!.selectedOptionsIndices[index],
+                                    ignoring: _revealOptions![index],
                                     child: ElevatedButton(
                                         onPressed: () {
+                                          // Reveal the selected option
+                                          setState(() {
+                                            _revealOptions![index] = true;
+                                          });
                                           questionsService
                                               .answerQuestion(
                                                   context: context,
@@ -100,9 +107,6 @@ class _QuestionScreenState extends State<QuestionScreen> {
                                               });
                                             } else {
                                               // Reveal only this option if it's incorrect
-                                              setState(() {
-                                                _revealOptions![index] = true;
-                                              });
                                               if (_revealOptions!
                                                       .where(
                                                           (option) => !option)
@@ -175,46 +179,55 @@ class _QuestionScreenState extends State<QuestionScreen> {
                         ),
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IgnorePointer(
-                          ignoring: widget.questionIndex == 0,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => QuestionScreen(
-                                          category: widget.category,
-                                          questionIndex:
-                                              widget.questionIndex - 1)));
-                            },
-                            child: const Text("Previous"),
-                          ),
-                        ),
-                        IgnorePointer(
-                          ignoring: widget.questionIndex + 1 ==
-                              questionsService.getQuestionCountUnderCategory(
-                                  context: context, category: widget.category),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => QuestionScreen(
-                                          category: widget.category,
-                                          questionIndex:
-                                              widget.questionIndex + 1)));
-                            },
-                            child: const Text("Next"),
-                          ),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),
+            ),
+            bottomNavigationBar: Theme(
+              data: ThemeData(
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent),
+              child: BottomNavigationBar(
+                  items: [
+                    widget.questionIndex > 0
+                        ? const BottomNavigationBarItem(
+                            icon: Icon(Icons.arrow_back), label: "Previous")
+                        : const BottomNavigationBarItem(
+                            icon: Icon(null), label: ""),
+                    widget.questionIndex + 1 <
+                            questionsService.getQuestionCountUnderCategory(
+                                context: context, category: widget.category)
+                        ? const BottomNavigationBarItem(
+                            icon: Icon(Icons.arrow_forward), label: "Next")
+                        : const BottomNavigationBarItem(
+                            icon: Icon(null), label: "")
+                  ],
+                  selectedItemColor: GlobalVariables.bottomNavbarTextColor,
+                  unselectedItemColor: GlobalVariables.bottomNavbarTextColor,
+                  onTap: (int index) {
+                    if (index == 0 && widget.questionIndex > 0) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => QuestionScreen(
+                              category: widget.category,
+                              questionIndex: widget.questionIndex - 1),
+                        ),
+                      );
+                    } else if (index == 1 &&
+                        widget.questionIndex + 1 <
+                            questionsService.getQuestionCountUnderCategory(
+                                context: context, category: widget.category)) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => QuestionScreen(
+                              category: widget.category,
+                              questionIndex: widget.questionIndex + 1),
+                        ),
+                      );
+                    }
+                  }),
             ),
           );
         } else if (snapshot.hasError) {
