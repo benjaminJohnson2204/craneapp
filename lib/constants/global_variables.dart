@@ -7,6 +7,6 @@ class GlobalVariables {
   static const buttonColor = Colors.blue;
   static const correctColor = Colors.green;
   static const incorrectColor = Colors.red;
-  static const topNavbarColor = Colors.deepPurple;
+  static const topNavbarColor = Color.fromARGB(255, 153, 236, 238);
   static const bottomNavbarTextColor = Colors.black;
 }

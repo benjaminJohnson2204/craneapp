@@ -5,6 +5,7 @@ import 'package:craneapp/services/categories.dart';
 import 'package:craneapp/services/checkAuthenticated.dart';
 import 'package:craneapp/services/logout.dart';
 import 'package:craneapp/services/questions.dart';
+import 'package:craneapp/widgets/app_bar.dart';
 import 'package:craneapp/widgets/logout_button.dart';
 import 'package:flutter/material.dart';
 
@@ -31,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (snapshot.hasData) {
             if (snapshot.data!) {
               return Scaffold(
+                appBar: MyAppBar(context: context),
                 backgroundColor: GlobalVariables.backgroundColor,
                 body: SafeArea(
                   child: Padding(
@@ -38,11 +40,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          color: GlobalVariables.backgroundColor,
-                          child: LogoutButtonWidget(),
-                        ),
                         FutureBuilder<List<Map<String, dynamic>>>(
                             future: categoriesService
                                 .getProgressOnAllCategories(context: context),
@@ -92,6 +89,31 @@ class _HomeScreenState extends State<HomeScreen> {
                                           },
                                         ),
                                       ),
+                                      Align(
+                                        alignment: Alignment.bottomCenter,
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            questionsService
+                                                .resetAnswersToAllQuestions(
+                                                    context: context)
+                                                .then(
+                                                  (result) =>
+                                                      Navigator.pushReplacement(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          const HomeScreen(),
+                                                    ),
+                                                  ),
+                                                );
+                                          },
+                                          style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStateProperty.all(
+                                                      Colors.red)),
+                                          child: const Text("Reset"),
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 );
@@ -101,27 +123,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               return const Center(
                                   child: CircularProgressIndicator());
                             })),
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              questionsService
-                                  .resetAnswersToAllQuestions(context: context)
-                                  .then(
-                                    (result) => Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => const HomeScreen(),
-                                      ),
-                                    ),
-                                  );
-                            },
-                            style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all(Colors.red)),
-                            child: const Text("Reset"),
-                          ),
-                        ),
                       ],
                     ),
                   ),

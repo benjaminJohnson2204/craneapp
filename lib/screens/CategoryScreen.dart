@@ -8,6 +8,7 @@ import 'package:craneapp/widgets/question_selector.dart';
 import 'package:flutter/material.dart';
 
 import '../models/question.dart';
+import '../widgets/app_bar.dart';
 
 class CategoryScreen extends StatefulWidget {
   static const String routeName = "/category";
@@ -27,6 +28,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: MyAppBar(context: context),
       backgroundColor: GlobalVariables.backgroundColor,
       body: SafeArea(
         child: Padding(
@@ -34,10 +36,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                const HomeButtonWidget(),
-                LogoutButtonWidget(),
-              ]),
               FutureBuilder<Map<String, int>>(
                 future: categoriesService.getProgressOnCategory(
                     context: context, category: widget.category),

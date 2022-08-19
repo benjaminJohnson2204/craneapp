@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../constants/global_variables.dart';
 import '../models/question.dart';
+import '../widgets/app_bar.dart';
 import '../widgets/home_button.dart';
 import '../widgets/logout_button.dart';
 
@@ -34,6 +35,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
         if (snapshot.hasData) {
           _revealOptions ??= snapshot.data!.selectedOptionsIndices;
           return Scaffold(
+            appBar: MyAppBar(context: context, category: widget.category),
             backgroundColor: GlobalVariables.backgroundColor,
             body: SafeArea(
               child: Padding(
@@ -41,24 +43,6 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const HomeButtonWidget(),
-                          ElevatedButton(
-                              onPressed: () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => CategoryScreen(
-                                      category: snapshot.data!.category,
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: Text(snapshot.data!.category)),
-                          LogoutButtonWidget(),
-                        ]),
                     Align(
                       alignment: Alignment.center,
                       child: Padding(
