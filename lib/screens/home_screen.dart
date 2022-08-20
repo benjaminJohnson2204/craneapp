@@ -6,7 +6,6 @@ import 'package:craneapp/services/check_authenticated.dart';
 import 'package:craneapp/services/logout.dart';
 import 'package:craneapp/services/questions.dart';
 import 'package:craneapp/widgets/app_bar.dart';
-import 'package:craneapp/widgets/logout_button.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {

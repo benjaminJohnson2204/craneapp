@@ -2,13 +2,11 @@ import 'package:craneapp/constants/global_variables.dart';
 import 'package:craneapp/services/categories.dart';
 import 'package:craneapp/services/check_authenticated.dart';
 import 'package:craneapp/services/questions.dart';
-import 'package:craneapp/widgets/home_button.dart';
-import 'package:craneapp/widgets/logout_button.dart';
-import 'package:craneapp/widgets/question_selector.dart';
 import 'package:flutter/material.dart';
 
 import '../models/question.dart';
 import '../widgets/app_bar.dart';
+import 'question_screen.dart';
 
 class CategoryScreen extends StatefulWidget {
   static const String routeName = "/category";
@@ -65,11 +63,17 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         child: ListView.builder(
                           itemCount: snapshot.data!.length,
                           itemBuilder: (context, index) {
-                            return QuestionSelectorWidget(
-                                index: index,
-                                text: snapshot.data![index].text,
-                                category: widget.category,
-                                color: () {
+                            return ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => QuestionScreen(
+                                              category: widget.category,
+                                              questionIndex: index)));
+                                },
+                                style: ButtonStyle(backgroundColor:
+                                    MaterialStateProperty.all(() {
                                   bool foundCorrect = false,
                                       foundSelected = false;
                                   for (int i = 0;
@@ -92,7 +96,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                       : (foundSelected
                                           ? Colors.red
                                           : Colors.blue);
-                                }());
+                                }())),
+                                child: Text("${index + 1}"));
                           },
                         ),
                       ),

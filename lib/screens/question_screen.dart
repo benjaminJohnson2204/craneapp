@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import '../constants/global_variables.dart';
 import '../models/question.dart';
 import '../widgets/app_bar.dart';
-import '../widgets/home_button.dart';
-import '../widgets/logout_button.dart';
 
 class QuestionScreen extends StatefulWidget {
   final String category;
