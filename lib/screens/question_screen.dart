@@ -1,4 +1,4 @@
-import 'package:craneapp/screens/CategoryScreen.dart';
+import 'package:craneapp/screens/category_screen.dart';
 import 'package:craneapp/services/questions.dart';
 import 'package:flutter/material.dart';
 

@@ -1,7 +1,7 @@
-import 'package:craneapp/screens/CategoryScreen.dart';
-import 'package:craneapp/screens/HomeScreen.dart';
-import 'package:craneapp/screens/LoginScreen.dart';
-import 'package:craneapp/screens/RegisterScreen.dart';
+import 'package:craneapp/screens/category_screen.dart';
+import 'package:craneapp/screens/home_screen.dart';
+import 'package:craneapp/screens/login_screen.dart';
+import 'package:craneapp/screens/register_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

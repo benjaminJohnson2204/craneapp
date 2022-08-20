@@ -1,6 +1,6 @@
 import 'package:craneapp/constants/global_variables.dart';
 import 'package:craneapp/services/categories.dart';
-import 'package:craneapp/services/checkAuthenticated.dart';
+import 'package:craneapp/services/check_authenticated.dart';
 import 'package:craneapp/services/questions.dart';
 import 'package:craneapp/widgets/home_button.dart';
 import 'package:craneapp/widgets/logout_button.dart';

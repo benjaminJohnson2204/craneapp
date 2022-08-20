@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../constants/global_variables.dart';
-import '../screens/CategoryScreen.dart';
-import '../screens/HomeScreen.dart';
+import '../screens/category_screen.dart';
+import '../screens/home_screen.dart';
 import '../services/logout.dart';
 
 MyAppBar({required BuildContext context, String? category}) => AppBar(

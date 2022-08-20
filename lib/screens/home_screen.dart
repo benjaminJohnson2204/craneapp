@@ -1,8 +1,8 @@
 import 'package:craneapp/constants/global_variables.dart';
-import 'package:craneapp/screens/CategoryScreen.dart';
-import 'package:craneapp/screens/LoginScreen.dart';
+import 'package:craneapp/screens/category_screen.dart';
+import 'package:craneapp/screens/login_screen.dart';
 import 'package:craneapp/services/categories.dart';
-import 'package:craneapp/services/checkAuthenticated.dart';
+import 'package:craneapp/services/check_authenticated.dart';
 import 'package:craneapp/services/logout.dart';
 import 'package:craneapp/services/questions.dart';
 import 'package:craneapp/widgets/app_bar.dart';

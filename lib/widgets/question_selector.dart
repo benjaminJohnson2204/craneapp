@@ -1,4 +1,4 @@
-import 'package:craneapp/screens/QuestionScreen.dart';
+import 'package:craneapp/screens/question_screen.dart';
 import 'package:flutter/material.dart';
 
 class QuestionSelectorWidget extends StatelessWidget {

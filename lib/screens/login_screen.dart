@@ -1,26 +1,23 @@
 import 'package:craneapp/constants/global_variables.dart';
-import 'package:craneapp/screens/LoginScreen.dart';
+import 'package:craneapp/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
-import '../services/register.dart';
+import '../services/login.dart';
 
-class RegisterScreen extends StatefulWidget {
-  static const String routeName = "/register";
-  const RegisterScreen({Key? key}) : super(key: key);
+class LoginScreen extends StatefulWidget {
+  static const String routeName = "/login";
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final formKey = GlobalKey<FormState>();
-  final RegisterService registerService = RegisterService();
+  final LoginService loginService = LoginService();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -49,35 +46,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           decoration:
                               const InputDecoration(hintText: "Password"),
                           obscureText: true),
-                      TextFormField(
-                          controller: confirmController,
-                          decoration: const InputDecoration(
-                              hintText: "Confirm Password"),
-                          obscureText: true),
                       ElevatedButton(
                         onPressed: () {
                           if (formKey.currentState!.validate()) {
-                            registerService.registerUser(
+                            loginService.loginUser(
                                 context: context,
                                 username: usernameController.text,
-                                password: passwordController.text,
-                                confirm: confirmController.text);
+                                password: passwordController.text);
                           }
                         },
-                        child: Text("Register"),
+                        child: const Text("Login"),
                       ),
                       Row(
                         children: [
-                          const Text("Already have an account?"),
+                          const Text("New to the app?"),
                           ElevatedButton(
                             onPressed: () {
                               SchedulerBinding.instance
                                   .addPostFrameCallback((_) {
                                 Navigator.pushReplacementNamed(
-                                    context, LoginScreen.routeName);
+                                    context, RegisterScreen.routeName);
                               });
                             },
-                            child: const Text("Login"),
+                            child: const Text("Register"),
                           ),
                         ],
                       )

@@ -1,5 +1,5 @@
 import 'package:craneapp/router.dart';
-import 'package:craneapp/screens/HomeScreen.dart';
+import 'package:craneapp/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {

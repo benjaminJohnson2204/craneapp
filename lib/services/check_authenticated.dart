@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../constants/error_handling.dart';
 import '../constants/util.dart';
 
 class CheckAuthenticatedService {
